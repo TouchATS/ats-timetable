@@ -11,10 +11,10 @@ async function atsRequest(path,method='GET',body,headers={}){const token=atsSess
 function atsCache(d){d=d||{};lsWrite(LS.settings,d.settings||{});lsWrite(LS.courses,Object.values(d.courses||{}).filter(Boolean));lsWrite(LS.entries,Object.values(d.entries||{}).filter(Boolean));}
 async function atsRefresh(){const {value}=await atsRequest('/data');atsCache(value);_applyFbToState(lsRead(LS.settings)||{},lsRead(LS.courses)||[],lsRead(LS.entries)||[]);}
 initApp=async function(){await atsRefresh();if(atsTimer)clearInterval(atsTimer);atsTimer=setInterval(()=>{if(!atsBusy&&!document.querySelector('.modal-backdrop.open'))atsRefresh().catch(()=>{});},30000);};
-api=async function(method,path,body){if(path==='/auth/me'){return {user:_currentUser};}if(path==='/auth/users'&&method==='GET'){const {value}=await atsRequest('/roles');const users=Object.entries(value||{}).map(([id,u])=>({id,...u}));lsWrite(LS.users,users);return users;}
+api=async function(method,path,body){if(path==='/auth/me'){return {user:_currentUser};}if(path==='/auth/users'&&method==='GET'){const {value}=await atsRequest(isSuperAdmin()?'/roles':'/roles/'+atsSession.uid);const users=isSuperAdmin()?Object.entries(value||{}).map(([id,u])=>({id,...u})):value?[{id:atsSession.uid,...value}]:[];lsWrite(LS.users,users);return users;}
 if(path.startsWith('/auth/users')){if(!isSuperAdmin())throw Error('เฉพาะ Super Admin');if(path==='/auth/users'&&method==='POST'){if(!/^[a-zA-Z0-9_-]{3,40}$/.test(body.username))throw Error('Username ต้องเป็นภาษาอังกฤษ ตัวเลข _ หรือ - จำนวน 3–40 ตัว');if((body.password||'').length<8)throw Error('รหัสผ่านต้องมีอย่างน้อย 8 ตัว');const account=await atsAuth('accounts:signUp',{email:atsEmail(body.username),password:body.password,returnSecureToken:true});const role={username:body.username,full_name:body.full_name||body.username,role:body.role,created_at:new Date().toISOString()};await atsRequest('/roles/'+account.localId,'PUT',role);return {id:account.localId};}
 const match=path.match(/^\/auth\/users\/([^/]+)$/);if(match){const id=match[1];if(id===atsSession.uid)throw Error('ไม่สามารถแก้ไขหรือลบสิทธิ์บัญชีตนเอง');if(method==='DELETE'){await atsRequest('/roles/'+id,'DELETE');return {ok:true};}if(method==='PUT'){await atsRequest('/roles/'+id,'PATCH',{full_name:body.full_name,role:body.role});return {ok:true};}}throw Error('รีเซตรหัสผ่านบัญชีอื่นผ่าน Firebase Console โดยเจ้าของระบบ');}
-if(path==='/auth/password'){if((body.newPassword||'').length<8)throw Error('รหัสผ่านต้องมีอย่างน้อย 8 ตัว');await atsAuth('accounts:signInWithPassword',{email:atsSession.email,password:body.oldPassword,returnSecureToken:true});await atsAuth('accounts:update',{idToken:await atsToken(),password:body.newPassword,returnSecureToken:true});return {ok:true};}
+if(path==='/auth/password'){if(method!=='PUT')throw Error('คำขอไม่ถูกต้อง');return atsChangeOwnPassword(body);}
 if(path.startsWith('/auth/logs'))return [];
 if(method==='GET')return localApi(method,path,body);
 if(!atsSession||!['admin','superadmin'].includes(_currentUser?.role))throw Error('บัญชีนี้ดูข้อมูลได้เท่านั้น');if(!/^\/(courses|entries|settings)(\/|\?|$)/.test(path))throw Error('ไม่รองรับคำขอ');atsBusy=true;
@@ -34,3 +34,18 @@ const loginField=document.getElementById('l_user');if(loginField)loginField.plac
 const atsOriginalSettings=renderSettingsView;renderSettingsView=function(){const result=atsOriginalSettings();document.getElementById('cfg_github_token')?.closest('.card')?.remove();return result;};
 
 window.addEventListener("DOMContentLoaded",()=>enterPublicMode());
+
+async function atsChangeOwnPassword(body){
+ if(!atsSession||!_currentUser)throw Error('กรุณาเข้าสู่ระบบก่อนเปลี่ยนรหัสผ่าน');
+ if(!body.oldPassword)throw Error('กรุณากรอกรหัสผ่านเดิม');
+ if(typeof body.newPassword!=='string'||body.newPassword.length<8)throw Error('รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัว');
+ if(body.newPassword===body.oldPassword)throw Error('กรุณาตั้งรหัสผ่านใหม่ให้ต่างจากรหัสผ่านเดิม');
+ let verified;try{verified=await atsAuth('accounts:signInWithPassword',{email:atsSession.email,password:body.oldPassword,returnSecureToken:true});}catch{throw Error('รหัสผ่านเดิมไม่ถูกต้อง หรือไม่สามารถยืนยันบัญชีได้');}
+ if(verified.localId!==atsSession.uid)throw Error('ไม่สามารถยืนยันบัญชีของคุณได้');
+ const changed=await atsAuth('accounts:update',{idToken:verified.idToken,password:body.newPassword,returnSecureToken:true});
+ atsSession.token=changed.idToken;atsSession.refresh=changed.refreshToken;atsSession.expires=Date.now()+Math.max(60,Number(changed.expiresIn||3600)-300)*1000;
+ _token=changed.idToken;sessionStorage.setItem('ats_session_v2',JSON.stringify(atsSession));return {ok:true};
+}
+openPwModal=function(){if(!atsSession){showToast('กรุณาเข้าสู่ระบบก่อน');return;}for(const id of ['pw_old','pw_new','pw_new2']){const e=document.getElementById(id);e.value='';e.type='password';}openModal('pwModal');};
+let atsPasswordSaving=false;
+changeMyPassword=async function(){if(atsPasswordSaving)return;const oldPassword=document.getElementById('pw_old').value,newPassword=document.getElementById('pw_new').value,confirmPassword=document.getElementById('pw_new2').value;if(!oldPassword||!newPassword||!confirmPassword){showToast('กรุณากรอกข้อมูลให้ครบ');return;}if(newPassword!==confirmPassword){showToast('รหัสผ่านใหม่ไม่ตรงกัน');return;}const btn=document.querySelector('#pwModal .btn-primary');atsPasswordSaving=true;if(btn)btn.disabled=true;try{await api('PUT','/auth/password',{oldPassword,newPassword});for(const id of ['pw_old','pw_new','pw_new2'])document.getElementById(id).value='';closeModal('pwModal');showToast('เปลี่ยนรหัสผ่านของคุณสำเร็จ');}catch(e){showToast(e.message,6000);}finally{atsPasswordSaving=false;if(btn)btn.disabled=false;}};

@@ -799,7 +799,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline:3px so
       <div class="form-row" id="u_pass_row">
         <div class="form-group">
           <label>รหัสผ่าน <span class="req">*</span></label>
-          <input class="form-control" id="u_password" type="text" onfocus="this.type='password'" autocomplete="off" placeholder="อย่างน้อย 6 ตัวอักษร">
+          <input class="form-control" id="u_password" type="text" onfocus="this.type='password'" autocomplete="off" placeholder="อย่างน้อย 8 ตัวอักษร">
         </div>
         <div class="form-group">
           <label>ยืนยันรหัสผ่าน <span class="req">*</span></label>
@@ -824,15 +824,15 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline:3px so
     <div class="modal-body">
       <div class="form-group" style="margin-bottom:10px">
         <label>รหัสผ่านเก่า <span class="req">*</span></label>
-        <input class="form-control" id="pw_old" type="text" onfocus="this.type='password'" autocomplete="off">
+        <input class="form-control" id="pw_old" type="password" autocomplete="current-password">
       </div>
       <div class="form-group" style="margin-bottom:10px">
         <label>รหัสผ่านใหม่ <span class="req">*</span></label>
-        <input class="form-control" id="pw_new" type="text" onfocus="this.type='password'" autocomplete="off" placeholder="อย่างน้อย 6 ตัวอักษร">
+        <input class="form-control" id="pw_new" type="password" autocomplete="new-password" placeholder="อย่างน้อย 8 ตัวอักษร">
       </div>
       <div class="form-group">
         <label>ยืนยันรหัสผ่านใหม่ <span class="req">*</span></label>
-        <input class="form-control" id="pw_new2" type="text" onfocus="this.type='password'" autocomplete="off">
+        <input class="form-control" id="pw_new2" type="password" autocomplete="new-password">
       </div>
     </div>
     <div class="modal-footer">
@@ -855,7 +855,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline:3px so
       </div>
       <div class="form-group" style="margin-bottom:10px">
         <label>รหัสผ่านใหม่ <span class="req">*</span></label>
-        <input class="form-control" id="resetPwNew" type="text" onfocus="this.type='password'" autocomplete="off" placeholder="อย่างน้อย 6 ตัวอักษร">
+        <input class="form-control" id="resetPwNew" type="text" onfocus="this.type='password'" autocomplete="off" placeholder="อย่างน้อย 8 ตัวอักษร">
       </div>
       <div class="form-group">
         <label>ยืนยันรหัสผ่านใหม่ <span class="req">*</span></label>
@@ -4745,7 +4745,7 @@ async function renderAdminView() {
           onclick="openResetPw(${esc(JSON.stringify(String(u.id)))},${esc(JSON.stringify(u.username))})">🔐 รีเซต pw</button>
         <button class="btn btn-danger btn-sm"
           onclick="deleteUser(${esc(JSON.stringify(String(u.id)))},${esc(JSON.stringify(u.username))})">🗑️ ลบ</button>`
-        : isMe ? `<span style="font-size:0.78rem;color:#888">(บัญชีของคุณ)</span>`
+        : isMe ? `<button class="btn btn-sm btn-primary" onclick="openPwModal()">🔑 เปลี่ยนรหัสผ่านของฉัน</button>`
         : `<span style="color:#bbb;font-size:0.78rem">—</span>`;
       return `<tr>
         <td>${esc(u.username)}</td>
