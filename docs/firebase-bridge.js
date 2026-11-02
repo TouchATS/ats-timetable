@@ -26,7 +26,7 @@ doLogout=function(){atsSession=null;_currentUser=null;_token='';sessionStorage.r
 changePassword=function(){openPwModal();};
 _defaultUsers=()=>[];schedulePushToFirebase=()=>{};startRealtimeSync=()=>{};pushToFirebase=async()=>{throw Error('กรุณาบันทึกผ่านหน้าจัดการข้อมูล');};pullFromFirebase=async()=>false;fbGet=async()=>null;fbSet=async()=>{throw Error('กรุณาบันทึกผ่านหน้าจัดการข้อมูล');};manualSyncToFirebase=()=>showToast('บันทึกข้อมูลส่วนกลางอัตโนมัติเมื่อกดบันทึกแล้ว');syncToGitHub=()=>showToast('ข้อมูลบันทึกใน Firebase แล้ว');writeLog=()=>{};
 exportAllData=async function(){if(!isSuperAdmin())return;const {value}=await atsRequest('/data');const url=URL.createObjectURL(new Blob([JSON.stringify({version:2,...value})],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='timetable-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-importAllData=()=>showToast('ให้นำเข้าไฟล์สำรองผ่าน Firebase Console โดยเจ้าของระบบ');
+// JSON import is installed by json-import.js.
 // No stale local credentials or automatic migration of legacy accounts.
 localStorage.removeItem(LS.users);localStorage.removeItem(LS.session);
 const loginField=document.getElementById('l_user');if(loginField)loginField.placeholder='Username เช่น admin1';
