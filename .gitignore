@@ -1,0 +1,6 @@
+*.sql
+*.gz
+*.zip
+.env*
+*backup*.json
+node_modules/
