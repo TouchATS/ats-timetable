@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="th">
-<head><meta http-equiv="Content-Security-Policy" content="connect-src 'self'; object-src 'none'">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>ระบบตารางสอน รร.ขส.ขส.ทบ. — เวอร์ชัน 1</title>
+<title>ระบบตารางสอน รร.ขส.ขส.ทบ. — เวอร์ชัน 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -460,7 +460,59 @@ textarea.form-control { resize: vertical; min-height: 60px; }
 .btn-exit-public { background:rgba(255,255,255,0.18); color:white; border:1px solid rgba(255,255,255,0.35); border-radius:6px; padding:5px 12px; cursor:pointer; font-size:0.82rem; font-family:inherit; font-weight:600; }
 .btn-exit-public:hover { background:rgba(255,255,255,0.28); }
 
-#loginScreen,.btn-exit-public,.smn-login{display:none!important}
+/* Version 2 — professional timetable workspace */
+.topbar-actions .btn-exit-public:hover { color:#000; }
+.topbar-actions .user-badge,
+.topbar-actions .user-badge .uname,
+.topbar-actions .btn-logout { color:#000; }
+.topbar-actions .btn-logout { background:#fff; border-color:#cbd5e1; }
+.topbar-actions .btn-logout:hover { background:#f1f5f9; }
+:root { --navy:#152c46; --blue:#245bd6; --line:#e2e8f0; --muted:#64748b; }
+body { background:#f5f7fb; color:#23354a; }
+.topbar { background:#fff; color:var(--navy); flex-wrap:wrap; box-shadow:0 1px 0 var(--line); padding:0 24px; gap:0 16px; }
+.topbar-brand { padding:20px 0; border:0; min-width:210px; }
+.topbar-brand h1 { font-size:1.1rem; letter-spacing:-.02em; }
+.topbar-brand .sub { color:var(--muted); opacity:1; margin-top:4px; }
+.topbar-nav { order:3; flex-basis:100%; border-top:1px solid var(--line); min-height:48px; overflow-x:auto; }
+.tab-btn { color:var(--muted); padding:0 18px; font-size:.86rem; }
+.tab-btn:hover { background:#f1f5fb; color:var(--blue); }
+.tab-btn.active { color:var(--blue); border-bottom-color:var(--blue); background:#f7faff; }
+.topbar-actions { margin-left:auto; padding:10px 0; flex-wrap:wrap; justify-content:flex-end; }
+.topbar-actions .btn-outline { color:#475569!important; border:1px solid var(--line)!important; background:#fff; }
+.public-badge { align-items:center; gap:12px; background:transparent; border:0; }
+.badge-label { color:var(--muted); font-size:.78rem; }
+.btn-exit-public { background:var(--blue); color:#fff; border:0; border-radius:8px; padding:11px 17px; font:600 .85rem 'Sarabun',sans-serif; cursor:pointer; }
+.sidebar { background:#fff; border-right:1px solid var(--line); width:300px; min-width:300px; }
+.sidebar select { border:1px solid #cbd5e1; border-radius:8px; padding:12px; background:#f8fafc; color:var(--navy); }
+.sidebar-item { border-radius:8px; margin:3px 10px; line-height:1.6; }
+.content-area { padding:28px; }
+.card { border:1px solid var(--line); border-radius:14px; box-shadow:0 4px 24px #1e3a5f05; overflow:hidden; }
+.card-header { padding:22px 24px; border-bottom:1px solid var(--line); gap:16px; flex-wrap:wrap; }
+.card-header h2 { color:var(--navy); font-size:1.12rem; line-height:1.6; }
+.data-table th { background:#edf2f9; color:#344a64; font-weight:600; padding:14px 12px; border-color:var(--line); }
+.data-table td { padding:13px 12px; border-color:var(--line); line-height:1.6; }
+.data-table tbody tr:hover { background:#f6f9ff; }
+.week-separator td { background:#eaf0fb!important; color:#2454a0!important; font-size:.85rem; padding:11px 14px; }
+.btn { border-radius:8px; padding:9px 14px; }
+.btn-primary { background:var(--blue); }
+.empty-state { padding:72px 32px; line-height:1.9; color:var(--muted); }
+#loginScreen { background:rgba(15,32,54,.5); backdrop-filter:blur(6px); }
+.login-box { border-radius:18px; box-shadow:0 24px 90px #10243a40; padding:36px; }
+.login-box input { border-radius:8px; padding:12px; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline:3px solid #93b4ff; outline-offset:3px; }
+@media(max-width:900px) {
+ .topbar { padding:0 12px; flex-wrap:nowrap; gap:6px; }
+ .topbar-brand { min-width:0; padding:16px 0; }
+ .topbar-brand h1 { font-size:.86rem; }
+ .topbar-actions { flex-wrap:nowrap; }
+ .topbar-actions .public-badge { display:flex!important; }
+ .btn-exit-public { padding:10px; font-size:.76rem; white-space:nowrap; }
+ .content-area { padding:14px; }
+ .sidebar { min-width:0; width:290px; }
+ .card-header { padding:16px; }
+ #sidebarToggle { color:var(--navy); border-color:var(--line); background:#f1f5f9; }
+}
+
 </style>
 <!-- SheetJS — สร้าง Excel ฝั่ง client -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -491,11 +543,11 @@ textarea.form-control { resize: vertical; min-height: 60px; }
 <!-- ═══════════════════════════════════════════
      LOGIN SCREEN
 ════════════════════════════════════════════ -->
-<div id="loginScreen">
+<div id="loginScreen" class="hidden" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
   <div class="login-box">
     <div class="login-logo">⚔️</div>
-    <h2>ระบบตารางสอน</h2>
-    <div class="login-sub">รร.ขส.ขส.ทบ. — กรุณาเข้าสู่ระบบ</div>
+    <h2 id="loginTitle">เข้าสู่ระบบจัดการ</h2>
+    <div class="login-sub">สำหรับเจ้าหน้าที่และผู้ดูแลตารางสอน</div>
     <div class="form-group">
       <label>ชื่อผู้ใช้</label>
       <input id="l_user" type="text" placeholder="username" autocomplete="username"
@@ -511,13 +563,13 @@ textarea.form-control { resize: vertical; min-height: 60px; }
     <div style="margin-top:16px;border-top:1px solid #e0e0e0;padding-top:14px">
       <div style="font-size:0.78rem;color:#999;margin-bottom:8px;text-align:center">หรือ</div>
       <button class="btn btn-outline-dark btn-login" onclick="enterPublicMode()" style="background:#f5f7fa;color:#1a2f4e;border:1px solid #ccd3dc">
-        👁️ ดูตารางสอน
+        กลับไปดูตารางสอน
       </button>
     </div>
   </div>
 </div>
 
-<div class="app-shell">
+<div class="app-shell public-mode">
 
   <!-- TOP BAR -->
   <div class="topbar">
@@ -557,7 +609,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <!-- public mode badge -->
       <div class="public-badge" id="publicBadge" style="display:none">
         <span class="badge-label">👁️ ดูอย่างเดียว</span>
-        <button class="btn-exit-public" onclick="exitPublicMode()">🔐 เข้าสู่ระบบ</button>
+        <button class="btn-exit-public" onclick="exitPublicMode()">เข้าสู่ระบบเพื่อแก้ไข</button>
       </div>
     </div>
   </div>
@@ -582,7 +634,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
         <button onclick="syncToGitHub();closeSidebar()" class="smn-btn hide-public sa-only" style="color:#80ff80;font-weight:700">🌐 อัพเดทเว็บไซท์</button>
         <div class="smn-divider"></div>
         <button onclick="doLogout()" class="smn-btn smn-logout hide-public">🔓 ออกจากระบบ</button>
-        <button onclick="exitPublicMode();closeSidebar()" class="smn-btn smn-login show-public-only">🔐 เข้าสู่ระบบ</button>
+        <button onclick="exitPublicMode();closeSidebar()" class="smn-btn smn-login show-public-only">เข้าสู่ระบบเพื่อแก้ไข</button>
       </div>
       <div style="padding:12px 14px;border-bottom:1px solid #eee;background:#f8f9fa">
         <div style="font-size:0.72rem;color:#888;font-weight:700;margin-bottom:6px">หลักสูตรที่เลือก</div>
@@ -602,8 +654,8 @@ textarea.form-control { resize: vertical; min-height: 60px; }
     <div class="content-area" id="contentArea">
       <div class="empty-state">
         <div class="icon">📋</div>
-        <div style="font-size:1rem;font-weight:700;margin-bottom:6px">ยังไม่ได้เลือกหลักสูตร</div>
-        <div>เลือกหลักสูตรจากแผงซ้าย หรือสร้างหลักสูตรใหม่</div>
+        <div style="font-size:1rem;font-weight:700;margin-bottom:6px">ตารางสอนและหลักสูตร</div>
+        <div>${_publicMode ? 'เลือกหลักสูตรจากเมนูด้านซ้ายเพื่อดูตาราง หากยังไม่มีรายการ แสดงว่ายังไม่มีหลักสูตรเปิดเผยแพร่' : 'เลือกหลักสูตรจากเมนูด้านซ้าย หรือสร้างหลักสูตรใหม่'}</div>
       </div>
     </div>
   </div>
@@ -1123,35 +1175,10 @@ async function hashPassword(pwd) {
 function _defaultUsers() { return []; }
 
 // ── Migration: อัพเกรด role ของ users เดิมใน localStorage ──────────────────
-(function migrateUserRoles() {
-  const users = lsRead(LS.users);
-  if (!users || !users.length) return; // ยังไม่มีข้อมูล → ใช้ _defaultUsers() อัตโนมัติ
-  let changed = false;
-  // 1. ทุก user ที่ยังไม่มี role → ตั้งเป็น 'admin'
-  users.forEach(u => { if (!u.role) { u.role = 'admin'; changed = true; } });
-  // 2. ถ้ายังไม่มี superadmin เลย → ยกระดับ admin1 หรือ user แรก
-  const hasSA = users.some(u => u.role === 'superadmin');
-  if (!hasSA) {
-    const target = users.find(u => u.username === 'admin1') || users[0];
-    if (target) { target.role = 'superadmin'; changed = true; }
-  }
-  if (changed) lsWrite(LS.users, users);
-})();
+
 
 // Migration: hash plaintext passwords ที่ยังไม่ได้ hash (SHA-256 = 64 hex chars)
-(async function migratePasswordsToHash() {
-  const users = lsRead(LS.users);
-  if (!users || !users.length) return;
-  const hexRe = /^[0-9a-f]{64}$/;
-  let changed = false;
-  for (const u of users) {
-    if (u.password && !hexRe.test(u.password)) {
-      u.password = await hashPassword(u.password);
-      changed = true;
-    }
-  }
-  if (changed) lsWrite(LS.users, users);
-})();
+
 
 function writeLog(action, detail) {
   const logs = lsRead(LS.logs) || [];
@@ -1422,7 +1449,7 @@ async function doLogin() {
         merged.forEach(u => fbSet(`/data/users/${String(u.id)}`, u).catch(function(){}));
       }
     } catch {}
-    const data = await api('POST', '/auth/login', { username, password: await hashPassword(password) });
+    const data = await api('POST', '/auth/login', { username, password: password });
     _token = data.token;
     _currentUser = data.user;
     // รีเซต public mode เสมอเมื่อ login สำเร็จ
@@ -1437,10 +1464,7 @@ async function doLogin() {
     document.getElementById('loginScreen').classList.add('hidden');
     await initApp();
     // ข้อ 3: บังคับเปลี่ยนรหัสผ่านถ้ายังใช้ default
-    const _DEFAULT_HASHES = new Set([
-      'ac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270',
-      '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92',
-    ]);
+    const _DEFAULT_HASHES = new Set();
     const _storedU = (lsRead(LS.users)||[]).find(u => u.username === data.user.username);
     if (_storedU && _DEFAULT_HASHES.has(_storedU.password)) {
       setTimeout(() => {
@@ -1462,42 +1486,37 @@ async function doLogin() {
 }
 
 function doLogout() {
-  _token = '';
+  _token = ''; _currentUser = null;
   localStorage.removeItem(LS.session);
   document.querySelector('.app-shell').classList.remove('is-superadmin');
-  document.getElementById('loginScreen').classList.remove('hidden');
-  document.getElementById('l_pass').value  = '';
-  document.getElementById('loginErr').textContent = '';
-  // ล้าง state
-  state.courses = []; state.teachers = []; state.subjects = [];
-  state.currentCourseId = null;
-  renderSidebar(); renderContent();
+  document.getElementById('l_pass').value = '';
+  enterPublicMode();
 }
 
-// ── Public (read-only) mode ────────────────────
+// หน้าแรกเป็นโหมดดูตารางเสมอ การล็อกอินเปิดเป็นหน้าต่างเหนือหน้าตาราง
 async function enterPublicMode() {
   _publicMode = true;
-  state.currentView = 'schedule';   // บังคับเปิดหน้าตารางสอนเสมอ
+  state.currentView = 'schedule';
   document.querySelector('.app-shell').classList.add('public-mode');
+  document.querySelector('.app-shell').classList.remove('is-superadmin');
   document.getElementById('publicBadge').style.display = 'flex';
   document.getElementById('loginScreen').classList.add('hidden');
-  showToast('โหมดดูอย่างเดียว — ไม่สามารถแก้ไขข้อมูลได้');
-  try {
-    await initApp();
-  } catch (e) {
-    showToast('ไม่สามารถโหลดข้อมูลได้: ' + e.message);
-  }
+  document.getElementById('l_pass').value = '';
+  document.getElementById('loginErr').textContent = '';
+  await initApp();
 }
 
 function exitPublicMode() {
-  _publicMode = false;
-  document.querySelector('.app-shell').classList.remove('public-mode');
-  document.querySelector('.app-shell').classList.remove('is-superadmin');
-  document.getElementById('publicBadge').style.display = 'none';
+  // คงโหมดอ่านอย่างเดียวไว้ระหว่างเปิดหน้าต่างล็อกอิน
   document.getElementById('loginScreen').classList.remove('hidden');
-  state.courses = []; state.teachers = []; state.subjects = [];
-  state.currentCourseId = null;
-  renderSidebar(); renderContent();
+  document.getElementById('l_user').focus();
+}
+
+function ensureVisibleCourse() {
+  const available = state.courses.filter(c => !_publicMode || c.isPublic);
+  if (!available.some(c => c.id === state.currentCourseId)) {
+    state.currentCourseId = available[0]?.id || null;
+  }
 }
 
 // ── Load all data on startup ────────────────────
@@ -1603,6 +1622,11 @@ async function initApp() {
       return 0;
     });
 
+    ensureVisibleCourse();
+    if (state.currentCourseId) {
+      const selected = findCourse(state.currentCourseId);
+      selected.entries = (await api('GET', `/entries?course_id=${encodeURIComponent(selected.id)}`)).map(mapEntryRow);
+    }
     // render ทันที (entries โหลด lazy เมื่อเลือกหลักสูตร)
     renderSidebar(); renderContent();
 
@@ -1622,7 +1646,8 @@ async function loadEntriesForCourse(courseId) {
   try {
     const rows = await api('GET', `/entries?course_id=${encodeURIComponent(courseId)}`);
     course.entries = rows.map(mapEntryRow);
-    renderScheduleView();
+    renderSidebar();
+    renderContent();
   } catch (e) {
     showToast('โหลดรายการสอนไม่สำเร็จ: ' + e.message);
   }
@@ -1676,8 +1701,15 @@ async function syncMasterData() {
   });
 }
 
-// ─── auto-check token on load ───────────────────
-
+// เริ่มหลังประกาศ state และฟังก์ชันทั้งหมดแล้ว
+document.addEventListener('DOMContentLoaded', async () => {
+  await enterPublicMode();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && _publicMode) {
+    document.getElementById('loginScreen').classList.add('hidden');
+  }
+});
 
 // ═══════════════════════════════════════════════
 //  STATE
@@ -1878,8 +1910,8 @@ function renderScheduleView() {
 
   if (!course) {
     ca.innerHTML = `<div class="empty-state"><div class="icon">📋</div>
-      <div style="font-size:1rem;font-weight:700;margin-bottom:6px">ยังไม่ได้เลือกหลักสูตร</div>
-      <div>เลือกหลักสูตรจากแผงซ้าย หรือสร้างหลักสูตรใหม่</div></div>`;
+      <div style="font-size:1rem;font-weight:700;margin-bottom:6px">ตารางสอนและหลักสูตร</div>
+      <div>${_publicMode ? 'เลือกหลักสูตรจากเมนูด้านซ้ายเพื่อดูตาราง หากยังไม่มีรายการ แสดงว่ายังไม่มีหลักสูตรเปิดเผยแพร่' : 'เลือกหลักสูตรจากเมนูด้านซ้าย หรือสร้างหลักสูตรใหม่'}</div></div>`;
     return;
   }
 
@@ -2578,6 +2610,8 @@ function openPrintWindow(bodyHtml) {
     .print-table td.left{text-align:left;}
     .print-table td.f12{font-size:13pt;}
     .print-table td.f16,.print-table th.f16{font-size:13pt;}
+    .print-date-fit{display:block;width:100%;min-width:0;overflow:hidden;white-space:nowrap;}
+    .print-date-text{display:inline-block;white-space:nowrap;vertical-align:top;}
     .print-table td.nobot{border-bottom:none;}
     .print-table td.notop{border-top:none;}
     /* ── summary ── */
@@ -2617,7 +2651,19 @@ function openPrintWindow(bodyHtml) {
       }
 
       // ── รอฟอนต์โหลดแล้วพิมพ์ ──────────────────────────────────────────────
-      var doP = function(){ window.print(); };
+      var doP = function(){
+        // วัดหลังฟอนต์พร้อม แล้วลดขนาดให้วันและวันที่อยู่ในช่องบรรทัดเดียว
+        document.querySelectorAll('.print-date-fit').forEach(function(box) {
+          var text = box.querySelector('.print-date-text');
+          if (!text || !box.clientWidth) return;
+          var size = parseFloat(window.getComputedStyle(text).fontSize);
+          var width = text.getBoundingClientRect().width;
+          if (width > box.clientWidth) {
+            text.style.fontSize = (size * (box.clientWidth - 1) / width) + 'px';
+          }
+        });
+        window.print();
+      };
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(function(){ setTimeout(doP, 200); });
       } else {
@@ -3729,8 +3775,8 @@ async function syncToGitHub() {
 // ═══════════════════════════════════════════════
 //  FIREBASE REALTIME DATABASE  (multi-device sync)
 // ═══════════════════════════════════════════════
-const FB_DB = '';
-const FB_API_KEY = '';
+const FB_DB = 'https://ats-timetable-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FB_API_KEY = 'AIzaSyBfc4-D2z2B0ej2XTpraGrLupd03_QAyAk';
 let _fbAnonToken       = null;
 let _fbAnonTokenExpiry = 0;
 
@@ -3994,7 +4040,8 @@ function _applyFbToState(settings, courses, entries) {
   // คืน currentCourseId ถ้ายังมีอยู่
   state.currentCourseId = state.courses.find(c => c.id === prevId)
     ? prevId
-    : (state.courses[0]?.id || null);
+    : null;
+  ensureVisibleCourse();
 
   renderSidebar();
   renderContent();
@@ -4128,7 +4175,7 @@ async function printTimetable() {
       const h = dayEntries[0];
       const RRED = 'background:#fff;color:black;font-weight:bold;border:1pt solid #000;-webkit-print-color-adjust:exact;print-color-adjust:exact;';
       return `<tr>
-        <td style="${RRED}font-family:'TH SarabunIT๙','TH Sarabun New','Sarabun',sans-serif;font-size:13pt;white-space:nowrap;text-align:left;vertical-align:top;padding:4px 6px">${formatDatePrint(date)}</td>
+        <td style="${RRED}font-family:'TH SarabunIT๙','TH Sarabun New','Sarabun',sans-serif;font-size:13pt;white-space:nowrap;text-align:left;vertical-align:top;padding:4px 6px"><span class="print-date-fit"><span class="print-date-text">${formatDatePrint(date)}</span></span></td>
         <td colspan="9" style="${RRED}font-family:'TH SarabunIT๙','TH Sarabun New','Sarabun',sans-serif;font-size:13pt;padding:6px 4px;text-align:center">หยุด ${esc(h.label)}</td>
       </tr>`;
     }
@@ -4146,7 +4193,7 @@ async function printTimetable() {
       const cls=[topCls,botCls].filter(Boolean).join(' ');
       const teacherHtml=getTeacherText(e).split(/\s*\/\s*/).map(t=>esc(t.trim())).filter(Boolean).join('<br>');
       const cumStr=e.cumHours?`${thaiNum(e.cumHours)}/${thaiNum(e.totalHours||'')}` :'';
-      const dateCell=isFirst?`<td rowspan="${daySpan}" class="left f16" style="white-space:nowrap;vertical-align:top">${formatDatePrint(date)}</td>`:'';
+      const dateCell=isFirst?`<td rowspan="${daySpan}" class="left f16" style="white-space:nowrap;vertical-align:top"><span class="print-date-fit"><span class="print-date-text">${formatDatePrint(date)}</span></span></td>`:'';
       const u=uInfo[idx]; let uniformCell='';
       if(u.show){
         const uIsLastInDay=(idx+u.span-1)===dayEntries.length-1;
@@ -4693,11 +4740,11 @@ async function renderAdminView() {
         : `<span style="font-size:0.75rem;background:#388e3c;color:white;padding:2px 8px;border-radius:10px">👤 Admin</span>`;
       const actions = isSA && !isMe ? `
         <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0;border:1px solid #90caf9"
-          onclick="openEditUser(${u.id},'${esc(u.full_name||'')}','${u.role||'admin'}')">✏️ แก้ไข</button>
+          onclick="openEditUser(${esc(JSON.stringify(String(u.id)))},${esc(JSON.stringify(u.full_name||''))},${esc(JSON.stringify(u.role||'admin'))})">✏️ แก้ไข</button>
         <button class="btn btn-sm" style="background:#f3e5f5;color:#6a1b9a;border:1px solid #ce93d8"
-          onclick="openResetPw(${u.id},'${esc(u.username)}')">🔐 รีเซต pw</button>
+          onclick="openResetPw(${esc(JSON.stringify(String(u.id)))},${esc(JSON.stringify(u.username))})">🔐 รีเซต pw</button>
         <button class="btn btn-danger btn-sm"
-          onclick="deleteUser(${u.id},'${esc(u.username)}')">🗑️ ลบ</button>`
+          onclick="deleteUser(${esc(JSON.stringify(String(u.id)))},${esc(JSON.stringify(u.username))})">🗑️ ลบ</button>`
         : isMe ? `<span style="font-size:0.78rem;color:#888">(บัญชีของคุณ)</span>`
         : `<span style="color:#bbb;font-size:0.78rem">—</span>`;
       return `<tr>
@@ -4793,7 +4840,8 @@ function openUserModal() {
 function openEditUser(id, fullName, role) {
   _editingUserId = id;
   document.getElementById('userModalTitle').textContent = 'แก้ไขข้อมูลผู้ใช้';
-  document.getElementById('u_username').value    = '';
+  const user = (lsRead(LS.users) || []).find(u => String(u.id) === String(id));
+  document.getElementById('u_username').value    = user?.username || '';
   document.getElementById('u_username').disabled = true;
   document.getElementById('u_fullname').value    = fullName;
   document.getElementById('u_pass_row').style.display  = 'none';
@@ -4822,7 +4870,7 @@ async function saveUser() {
     if (!password) { showToast('กรุณากรอก password'); return; }
     if (password !== password2) { showToast('รหัสผ่านไม่ตรงกัน'); return; }
     try {
-      await api('POST', '/auth/users', { username, password: await hashPassword(password), role, full_name: fullName||null });
+      await api('POST', '/auth/users', { username, password: password, role, full_name: fullName||null });
       writeLog('CREATE_USER', `สร้างผู้ใช้: ${username} (${role})`);
       closeModal('userModal'); renderAdminView(); showToast(`✅ สร้าง "${username}" สำเร็จ (${role})`);
     } catch (e) { showToast('ผิดพลาด: ' + e.message); }
@@ -4884,7 +4932,7 @@ async function doResetPassword() {
   if (!newPassword) { showToast('กรุณากรอกรหัสผ่านใหม่'); return; }
   if (newPassword !== newPassword2) { showToast('รหัสผ่านไม่ตรงกัน'); return; }
   try {
-    const res = await api('PUT', `/auth/users/${id}/reset-password`, { newPassword: await hashPassword(newPassword) });
+    const res = await api('PUT', `/auth/users/${id}/reset-password`, { newPassword: newPassword });
     writeLog('RESET_PASSWORD', `รีเซตรหัสผ่าน user id:${id}`);
     closeModal('resetPwModal'); renderAdminView(); showToast('✅ ' + res.message);
   } catch (e) { showToast('ผิดพลาด: ' + e.message); }
@@ -5036,14 +5084,6 @@ function selectBEDate(iso) {
   }
   closeBECal();
 }
-
-// GitHub Pages: shared published data, original version 1 viewer and print layout.
-async function initApp(){const r=await fetch('./data.json',{cache:'no-store'});if(!r.ok)throw Error('โหลดข้อมูลตารางสอนไม่สำเร็จ');const d=await r.json();_applyFbToState(d.settings,d.courses,d.entries);}
-async function api(method){if(method!=='GET')throw Error('กรุณาแก้ไขในโปรแกรมผู้ดูแลแล้วเผยแพร่ข้อมูลใหม่');return [];}
-function startRealtimeSync(){}
-function exitPublicMode(){}
-function doLogin(){}
-window.addEventListener('DOMContentLoaded',()=>enterPublicMode());
 </script>
-</body>
+<script src="firebase-bridge.js"></script></body>
 </html>
