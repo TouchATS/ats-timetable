@@ -1608,7 +1608,8 @@ async function initApp() {
       signerPos2:  c.signer_pos2,
       signerPos3:  c.signer_pos3,
       signerDate:  c.signer_date,
-      isPublic:    !!c.is_public,
+      isPublic:    !c.is_draft && !!c.is_public,
+    isDraft:     !!c.is_draft,
       entries:     null,
     }));
 
@@ -1948,10 +1949,10 @@ function renderScheduleView() {
     // ── ตรวจ conflict ──
     const hasConflict = conflictIds.has(e.id);
     const rowStyle    = hasConflict
-      ? 'background:#fff3e0;border-left:4px solid #e53935;'
+      ? 'background:#fff3e0;border-left:4px solid #e53935;color:#c62828;'
       : '';
     const warnIcon    = hasConflict
-      ? `<span title="วิชาเดียวกันซ้ำวัน/เวลา" style="color:#c62828;font-size:0.9rem;cursor:help">⚠️</span> `
+      ? `<span title="วิชาเดียวกันซ้ำวัน/เวลา ดูหลักสูตรที่ซ้ำได้ในหน้าแก้ไขฉบับร่าง" style="color:#c62828;font-size:0.9rem;cursor:help">⚠️</span> `
       : '';
 
     const teacherText = getTeacherText(e);
@@ -1984,7 +1985,7 @@ function renderScheduleView() {
   <div class="card">
     <div class="card-header">
       <div>
-        <h2>${esc(course.name)} รุ่นที่ ${toThai(course.runNumber||'')}</h2>
+        <h2>${course.isDraft?'📝 ฉบับร่าง: ':''}${esc(course.name)} รุ่นที่ ${toThai(course.runNumber||'')}</h2>
         <div style="font-size:0.78rem;color:#888;margin-top:2px">
           ${course.startDate?`${formatDate(course.startDate)} – ${formatDate(course.endDate)}`:''}
           &nbsp;|&nbsp; ${toThai(entries.length)} รายการ
@@ -2015,7 +2016,9 @@ function renderScheduleView() {
 function renderCoursesView() {
   const ca = document.getElementById('contentArea');
   const rows = state.courses.map(c => {
-    const pubBtn = c.isPublic
+    const pubBtn = c.isDraft
+      ? `<span style="color:#9a6400;font-weight:bold">📝 ฉบับร่าง</span> <button class="btn btn-success btn-sm" onclick="activateDraft('${c.id}')">เปิดใช้งาน</button>`
+      : c.isPublic
       ? `<button class="btn btn-success btn-sm"
            onclick="toggleCoursePublic('${c.id}')" title="คลิกเพื่อปิดการดูสาธารณะ">🌐 สาธารณะ</button>`
       : `<button class="btn btn-sm" style="background:#f0f0f0;color:#888;border:1px solid #ccc"
@@ -4019,7 +4022,8 @@ function _applyFbToState(settings, courses, entries) {
     signerPos2:  c.signer_pos2,
     signerPos3:  c.signer_pos3,
     signerDate:  c.signer_date,
-    isPublic:    !!c.is_public,
+    isPublic:    !c.is_draft && !!c.is_public,
+    isDraft:     !!c.is_draft,
     entries:     null,
   }));
   state.courses.sort((a, b) => {
@@ -4138,7 +4142,7 @@ async function printTimetable() {
     return `
       <tr><td colspan="10" style="${HF}padding-top:6mm">ตารางสอนประจำสัปดาห์</td></tr>
       <tr><td colspan="10" style="${HF}">${esc(state.schoolName)}</td></tr>
-      <tr><td colspan="10" style="${HF}padding-bottom:3px">ตารางสอน หลักสูตร ${esc(course.name)} รุ่นที่ ${toThai(course.runNumber||'')} &nbsp; ประจำสัปดาห์ที่ ${toThai(w)} &nbsp; วันที่ ${dateRange}</td></tr>
+      <tr><td colspan="10" style="${HF}padding-bottom:3px">ตารางสอน หลักสูตร ${course.isDraft?'📝 ฉบับร่าง: ':''}${esc(course.name)} รุ่นที่ ${toThai(course.runNumber||'')} &nbsp; ประจำสัปดาห์ที่ ${toThai(w)} &nbsp; วันที่ ${dateRange}</td></tr>
       <tr>
         <th class="f16">วัน , เดือน , ปี</th><th class="f16">เวลา</th><th class="f16">วิชา</th>
         <th class="f16">ชม.ที่ใช้<br>หมดไป/<br>ชม.ทั้งหมด</th><th class="f16">ผู้สอน</th>
@@ -5083,5 +5087,5 @@ function selectBEDate(iso) {
   closeBECal();
 }
 </script>
-<script src="firebase-bridge.js?v=20261102-session2"></script><script src="session.js?v=20261102-autosave1"></script><script src="autosave.js?v=20261102-autosave1"></script><script src="json-import.js?v=20261102-session2"></script></body>
+<script src="firebase-bridge.js?v=20261102-draft1"></script><script src="session.js?v=20261102-autosave1"></script><script src="autosave.js?v=20261102-autosave1"></script><script src="course-drafts.js?v=20261102-draft1"></script><script src="json-import.js?v=20261102-draft1"></script></body>
 </html>
