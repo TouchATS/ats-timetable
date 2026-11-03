@@ -28,3 +28,13 @@
 @media screen and (min-width:901px) {
  .app-shell.sidebar-collapsed #sidebar { display:none; }
 }
+/* Summary tables retain every field and reflow on smaller screens. */
+.summary-table td span { white-space:normal !important; overflow-wrap:anywhere; }
+.summary-table th:nth-child(3),.summary-table th:nth-child(5),.summary-table th:last-child { width:auto; }
+.summary-container { max-width:100%; }
+@media screen and (max-width:1100px) {
+ .summary-table .schedule-entry td { grid-column:auto; }
+ .summary-table .schedule-entry td[data-label="ผู้สอน"],
+ .summary-table .schedule-entry td[data-label="วิชา"],
+ .summary-table .schedule-entry td[data-label="หมายเหตุ"] { grid-column:1/-1; }
+}

@@ -517,7 +517,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline:3px so
 </style>
 <!-- SheetJS — สร้าง Excel ฝั่ง client -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="responsive-schedule.css?v=20261103-3">
+<link rel="stylesheet" href="responsive-schedule.css?v=20261103-4">
 </head>
 <body>
 
@@ -2309,16 +2309,16 @@ function renderSummaryView() {
       const cumStr = e.cumHours||e.cumulativeHours
         ? `${thaiNum(e.cumHours||e.cumulativeHours)}/${thaiNum(course.totalHours||e.totalHours||'')}`
         : '';
-      return `<tr>
-        <td class="text-center">${thaiNum(e.week||'')}</td>
-        <td style="white-space:nowrap;font-size:0.82rem">${dayName(e.date)}<br>${formatDate(e.date)}</td>
-        <td style="white-space:nowrap;font-size:0.82rem">${formatTime(e.startTime)} – ${formatTime(e.endTime)}</td>
-        <td class="text-center">${cumStr}</td>
-        <td style="font-size:0.82rem">${getTeacherText(e).split(' / ').map(t=>`<span style="white-space:nowrap;display:block">${esc(t)}</span>`).join('')}</td>
-        <td class="text-center"><span class="badge badge-method">${esc(e.method||'')}</span></td>
-        <td style="font-size:0.8rem">${esc(e.location||'')}</td>
-        <td style="font-size:0.8rem">${esc(e.uniform||'')}</td>
-        <td style="font-size:0.8rem">${esc(e.notes||'')}</td>
+      return `<tr class="schedule-entry">
+        <td data-label="สัปดาห์" class="text-center">${thaiNum(e.week||'')}</td>
+        <td data-label="วัน/วันที่" style="white-space:nowrap;font-size:0.82rem">${dayName(e.date)}<br>${formatDate(e.date)}</td>
+        <td data-label="เวลา" style="white-space:nowrap;font-size:0.82rem">${formatTime(e.startTime)} – ${formatTime(e.endTime)}</td>
+        <td data-label="ชั่วโมงสะสม/ทั้งหมด" class="text-center">${cumStr}</td>
+        <td data-label="ผู้สอน" style="font-size:0.82rem">${getTeacherText(e).split(' / ').map(t=>`<span style="white-space:nowrap;display:block">${esc(t)}</span>`).join('')}</td>
+        <td data-label="วิธีสอน" class="text-center"><span class="badge badge-method">${esc(e.method||'')}</span></td>
+        <td data-label="สถานที่" style="font-size:0.8rem">${esc(e.location||'')}</td>
+        <td data-label="การแต่งกาย" style="font-size:0.8rem">${esc(e.uniform||'')}</td>
+        <td data-label="หมายเหตุ" style="font-size:0.8rem">${esc(e.notes||'')}</td>
       </tr>`;
     }).join('') :
     `<tr><td colspan="9" class="empty-state" style="padding:24px">ไม่มีข้อมูลสำหรับวิชานี้</td></tr>`;
@@ -2342,8 +2342,8 @@ function renderSummaryView() {
             <button class="btn btn-success btn-sm"  onclick="exportSummaryExcel('subject')">📥 Excel</button>
           </div>` : ''}
       </div>
-      <div style="overflow-x:auto">
-        <table class="data-table" id="summaryTable">
+      <div class="schedule-container summary-container">
+        <table class="data-table schedule-table summary-table" id="summaryTable">
           <thead><tr>
             <th>สัปดาห์</th>
             <th>วัน/วันที่</th>
@@ -2375,16 +2375,16 @@ function renderSummaryView() {
       const cumStr = e.cumHours||e.cumulativeHours
         ? `${thaiNum(e.cumHours||e.cumulativeHours)}/${thaiNum(course.totalHours||e.totalHours||'')}`
         : '';
-      return `<tr>
-        <td class="text-center">${thaiNum(e.week||'')}</td>
-        <td style="white-space:nowrap;font-size:0.82rem">${dayName(e.date)}<br>${formatDate(e.date)}</td>
-        <td style="white-space:nowrap;font-size:0.82rem">${formatTime(e.startTime)} – ${formatTime(e.endTime)}</td>
-        <td class="left" style="font-size:0.82rem">${esc(e.subject||'')}</td>
-        <td class="text-center">${cumStr}</td>
-        <td class="text-center"><span class="badge badge-method">${esc(e.method||'')}</span></td>
-        <td style="font-size:0.8rem">${esc(e.location||'')}</td>
-        <td style="font-size:0.8rem">${esc(e.uniform||'')}</td>
-        <td style="font-size:0.8rem">${esc(e.notes||'')}</td>
+      return `<tr class="schedule-entry">
+        <td data-label="สัปดาห์" class="text-center">${thaiNum(e.week||'')}</td>
+        <td data-label="วัน/วันที่" style="white-space:nowrap;font-size:0.82rem">${dayName(e.date)}<br>${formatDate(e.date)}</td>
+        <td data-label="เวลา" style="white-space:nowrap;font-size:0.82rem">${formatTime(e.startTime)} – ${formatTime(e.endTime)}</td>
+        <td data-label="วิชา" class="left" style="font-size:0.82rem">${esc(e.subject||'')}</td>
+        <td data-label="ชั่วโมงสะสม/ทั้งหมด" class="text-center">${cumStr}</td>
+        <td data-label="วิธีสอน" class="text-center"><span class="badge badge-method">${esc(e.method||'')}</span></td>
+        <td data-label="สถานที่" style="font-size:0.8rem">${esc(e.location||'')}</td>
+        <td data-label="การแต่งกาย" style="font-size:0.8rem">${esc(e.uniform||'')}</td>
+        <td data-label="หมายเหตุ" style="font-size:0.8rem">${esc(e.notes||'')}</td>
       </tr>`;
     }).join('') :
     `<tr><td colspan="9" class="empty-state" style="padding:24px">ไม่มีข้อมูลสำหรับครูท่านนี้</td></tr>`;
@@ -2408,8 +2408,8 @@ function renderSummaryView() {
             <button class="btn btn-success btn-sm"  onclick="exportSummaryExcel('teacher')">📥 Excel</button>
           </div>` : ''}
       </div>
-      <div style="overflow-x:auto">
-        <table class="data-table" id="summaryTable">
+      <div class="schedule-container summary-container">
+        <table class="data-table schedule-table summary-table" id="summaryTable">
           <thead><tr>
             <th>สัปดาห์</th>
             <th>วัน/วันที่</th>
