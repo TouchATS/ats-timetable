@@ -22,7 +22,9 @@
  .schedule-table tr.schedule-entry { grid-template-columns:minmax(0,1fr); }
 }
 /* Keep the toggle available on desktop as well as mobile. */
-#sidebarToggle { display:inline-flex !important; align-items:center; justify-content:center; flex-shrink:0; }
+#sidebarToggle { display:inline-flex !important; align-items:center; justify-content:center; flex-shrink:0; min-width:40px; min-height:40px; color:#19324d !important; background:#f1f5f9 !important; border:1px solid #cbd5e1 !important; border-radius:8px; }
+#sidebarToggle:hover { background:#e2e8f0 !important; }
+#sidebarToggle:focus-visible { outline:3px solid #2563eb; outline-offset:2px; }
 @media screen and (min-width:901px) {
  .app-shell.sidebar-collapsed #sidebar { display:none; }
 }
