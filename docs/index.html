@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+<meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ระบบตารางสอน รร.ขส.ขส.ทบ. — เวอร์ชัน 2</title>
@@ -4034,8 +4035,13 @@ function _applyFbToState(settings, courses, entries) {
   });
 
   // populate entries
+  const entriesByCourse = new Map();
+  for (const entry of entries) {
+    if (!entriesByCourse.has(entry.course_id)) entriesByCourse.set(entry.course_id, []);
+    entriesByCourse.get(entry.course_id).push(entry);
+  }
   state.courses.forEach(course => {
-    const ce = entries.filter(e => e.course_id === course.id);
+    const ce = entriesByCourse.get(course.id) || [];
     course.entries = ce.map(mapEntryRow);
   });
 
@@ -5087,5 +5093,5 @@ function selectBEDate(iso) {
   closeBECal();
 }
 </script>
-<script src="firebase-bridge.js?v=20261102-draft1"></script><script src="session.js?v=20261102-autosave1"></script><script src="autosave.js?v=20261102-autosave1"></script><script src="course-drafts.js?v=20261102-draft1"></script><script src="json-import.js?v=20261102-draft1"></script></body>
+<script src="firebase-bridge.js?v=20261103-optimize1"></script><script src="session.js?v=20261102-autosave1"></script><script src="autosave.js?v=20261102-autosave1"></script><script src="course-drafts.js?v=20261103-optimize1"></script><script src="json-import.js?v=20261102-draft1"></script></body>
 </html>

@@ -2,7 +2,15 @@
 function draftList(v){return Object.values(v||{}).filter(Boolean);}
 function draftSubject(v){return String(v||'').normalize('NFC').trim().replace(/\s+/g,' ').toLocaleLowerCase('th');}
 function draftOverlaps(a,b){return a.id!==b.id&&a.type!=='holiday'&&b.type!=='holiday'&&a.entry_date===b.entry_date&&a.start_time<b.end_time&&b.start_time<a.end_time&&draftSubject(a.subject)&&draftSubject(a.subject)===draftSubject(b.subject);}
-function draftConflicts(d,id){const courses=draftList(d.courses),entries=draftList(d.entries),active=new Set(courses.filter(c=>!c.is_draft||c.id===id).map(c=>c.id));const result=[];for(const a of entries.filter(e=>e.course_id===id)){for(const b of entries){if(active.has(b.course_id)&&draftOverlaps(a,b))result.push({entry:a,other:b,courseName:courses.find(c=>c.id===b.course_id)?.name||b.course_id});}}return result;}
+function draftConflicts(d,id){
+ const courses=draftList(d.courses),entries=draftList(d.entries),active=new Set(courses.filter(c=>!c.is_draft||c.id===id).map(c=>c.id));
+ const names=new Map(courses.map(c=>[c.id,c.name])),buckets=new Map();
+ const key=e=>JSON.stringify([e.entry_date,draftSubject(e.subject)]);
+ for(const e of entries){if(e.type==='holiday'||!active.has(e.course_id))continue;const k=key(e);if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(e);}
+ const result=[];
+ for(const a of entries){if(a.course_id!==id||a.type==='holiday')continue;for(const b of buckets.get(key(a))||[])if(draftOverlaps(a,b))result.push({entry:a,other:b,courseName:names.get(b.course_id)||b.course_id});}
+ return result;
+}
 function draftDate(s,offset){if(!s)return s;const d=new Date(s+'T00:00:00Z');if(Number.isNaN(d.getTime())||d.toISOString().slice(0,10)!==s)throw Error('วันที่ไม่ถูกต้อง');d.setUTCDate(d.getUTCDate()+offset);return d.toISOString().slice(0,10);}
 function draftShift(d,id,newStart){const c=d.courses.find(c=>c.id===id);if(!c?.is_draft)throw Error('เลื่อนตารางทั้งชุดได้เฉพาะฉบับร่าง');const old=c.start_date||d.entries.filter(e=>e.course_id===id).map(e=>e.entry_date).sort()[0];if(!old)throw Error('กรุณากำหนดวันเริ่มเดิมก่อน');draftDate(newStart,0);const days=Math.round((Date.parse(newStart+'T00:00:00Z')-Date.parse(old+'T00:00:00Z'))/86400000);for(const e of d.entries.filter(e=>e.course_id===id))e.entry_date=draftDate(e.entry_date,days);c.start_date=newStart;c.end_date=draftDate(c.end_date,days);return days;}
 function draftClone(d,id,newId){const src=d.courses.find(c=>c.id===id);if(!src)throw Error('ไม่พบหลักสูตรต้นฉบับ');const copy={...src,id:newId(),name:src.name+' (ฉบับร่าง)',is_draft:true,is_public:0};const rows=d.entries.filter(e=>e.course_id===id).map(e=>({...e,id:newId(),course_id:copy.id}));d.courses.push(copy);d.entries.push(...rows);return copy;}
