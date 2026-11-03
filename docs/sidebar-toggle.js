@@ -1,7 +1,6 @@
 "use strict";
 (()=>{
  const shell=document.querySelector('.app-shell'),sidebar=document.getElementById('sidebar'),button=document.getElementById('sidebarToggle'),overlay=document.getElementById('sidebarOverlay');
- const hideButton=document.createElement('button');hideButton.id='sidebarHideButton';hideButton.type='button';hideButton.textContent='◀ ซ่อนแถบด้านข้าง';hideButton.className='btn btn-gray';hideButton.style.cssText='margin:10px;min-height:40px;flex-shrink:0';hideButton.onclick=()=>toggleSidebar();sidebar.prepend(hideButton);
  const mobile=matchMedia('(max-width:900px)');
  let hidden=false;try{hidden=localStorage.getItem('ats_sidebar_hidden')==='1';}catch{}
  function update(){
