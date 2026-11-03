@@ -1,0 +1,23 @@
+/* Schedule only: wrap long content without widening the entire page. */
+.schedule-container { width:100%; min-width:0; }
+.schedule-table { table-layout:fixed; }
+.schedule-table th,.schedule-table td { overflow-wrap:anywhere; white-space:normal !important; }
+.schedule-table th:nth-child(3) { width:16%; }
+.schedule-table th:nth-child(5) { width:20%; }
+.schedule-table th:last-child { width:10%; }
+.schedule-table .btn { margin:2px; }
+@media screen and (max-width:1100px) {
+ .schedule-table,.schedule-table tbody { display:block; width:100%; }
+ .schedule-table thead { display:none; }
+ .schedule-table tr.schedule-entry { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); margin:12px 0; border:1px solid #dce4ef; border-radius:10px; overflow:hidden; }
+ .schedule-table .schedule-entry td { display:block; width:auto; min-width:0; padding:10px 12px; font-size:0.95rem !important; text-align:left; border:0; border-bottom:1px solid #e5ebf3; }
+ .schedule-table .schedule-entry td::before { content:attr(data-label); display:block; font-size:0.8rem; font-weight:700; color:#52647a; margin-bottom:3px; }
+ .schedule-table .schedule-entry td:nth-child(3),.schedule-table .schedule-entry td:nth-child(5),.schedule-table .schedule-entry td:last-child { grid-column:1/-1; }
+ .schedule-table tr.week-separator,.schedule-table tr.schedule-holiday { display:block; margin-top:12px; }
+ .schedule-table .week-separator td,.schedule-table .schedule-holiday td { display:block; width:auto; padding:10px; }
+ .schedule-table .btn-icon { min-width:40px; min-height:40px; }
+ .schedule-table .hide-public { width:auto; }
+}
+@media screen and (max-width:380px) {
+ .schedule-table tr.schedule-entry { grid-template-columns:minmax(0,1fr); }
+}

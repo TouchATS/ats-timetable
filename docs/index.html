@@ -517,6 +517,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline:3px so
 </style>
 <!-- SheetJS — สร้าง Excel ฝั่ง client -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="responsive-schedule.css?v=20261103-1">
 </head>
 <body>
 
@@ -1935,9 +1936,9 @@ function renderScheduleView() {
     }
     // ── วันหยุด ──
     if (e.type === 'holiday') {
-      rows += `<tr>
+      rows += `<tr class="schedule-holiday">
         <td style="white-space:nowrap;font-size:0.8rem;vertical-align:middle">${dayName(e.date)}<br>${formatDate(e.date)}</td>
-        <td colspan="10" style="background:#e53935;color:white;text-align:center;font-weight:700;font-size:1rem;letter-spacing:0.03em">
+        <td colspan="9" style="background:#e53935;color:white;text-align:center;font-weight:700;font-size:1rem;letter-spacing:0.03em">
           หยุด ${esc(e.label)}
         </td>
         <td style="white-space:nowrap" class="hide-public">
@@ -1958,18 +1959,18 @@ function renderScheduleView() {
 
     const teacherText = getTeacherText(e);
     const cumStr = (e.cumHours||e.cumulativeHours) ? `${thaiNum(e.cumHours||e.cumulativeHours)}/${thaiNum(e.totalHours||'')}` : '';
-    rows += `<tr style="${rowStyle}">
-      <td style="white-space:nowrap;font-size:0.8rem">${warnIcon}${dayName(e.date)}<br>${formatDate(e.date)}</td>
-      <td style="white-space:nowrap;font-size:0.8rem">${formatTime(e.startTime)}<br>– ${formatTime(e.endTime)}</td>
-      <td class="left">${esc(e.subject)}</td>
-      <td class="text-center" style="font-size:0.78rem">${cumStr}</td>
-      <td style="font-size:0.8rem;white-space:nowrap">${esc(teacherText)}</td>
-      <td class="text-center"><span class="badge badge-method">${esc(e.method||'')}</span></td>
-      <td style="font-size:0.78rem">${esc(e.location||'')}</td>
-      <td style="font-size:0.78rem">${esc(e.evidence||'')}</td>
-      <td style="font-size:0.78rem">${esc(e.uniform||'')}</td>
-      <td style="font-size:0.78rem">${esc(e.notes||'')}</td>
-      <td style="white-space:nowrap" class="hide-public">
+    rows += `<tr class="schedule-entry" style="${rowStyle}">
+      <td data-label="วัน เดือน ปี" style="white-space:nowrap;font-size:0.8rem">${warnIcon}${dayName(e.date)}<br>${formatDate(e.date)}</td>
+      <td data-label="เวลา" style="white-space:nowrap;font-size:0.8rem">${formatTime(e.startTime)}<br>– ${formatTime(e.endTime)}</td>
+      <td data-label="วิชา" class="left">${esc(e.subject)}</td>
+      <td data-label="ชั่วโมงสะสม/ทั้งหมด" class="text-center" style="font-size:0.78rem">${cumStr}</td>
+      <td data-label="ผู้สอน" style="font-size:0.8rem;white-space:nowrap">${esc(teacherText)}</td>
+      <td data-label="วิธีสอน" class="text-center"><span class="badge badge-method">${esc(e.method||'')}</span></td>
+      <td data-label="สถานที่" style="font-size:0.78rem">${esc(e.location||'')}</td>
+      <td data-label="หลักฐาน" style="font-size:0.78rem">${esc(e.evidence||'')}</td>
+      <td data-label="การแต่งกาย" style="font-size:0.78rem">${esc(e.uniform||'')}</td>
+      <td data-label="หมายเหตุ" style="font-size:0.78rem">${esc(e.notes||'')}</td>
+      <td data-label="จัดการ" style="white-space:nowrap" class="hide-public">
         <button class="btn btn-gray btn-sm btn-icon" title="แก้ไข" onclick="editEntry('${e.id}')">✏️</button>
         <button class="btn btn-primary btn-sm btn-icon" title="คัดลอก" onclick="duplicateEntry('${e.id}')">📋</button>
         <button class="btn btn-danger btn-sm btn-icon" title="ลบ" onclick="deleteEntry('${e.id}')">🗑️</button>
@@ -1998,8 +1999,8 @@ function renderScheduleView() {
         <button class="btn btn-primary" onclick="openEntryModal()">+ เพิ่มรายการ</button>
       </div>
     </div>
-    <div style="overflow-x:auto">
-      <table class="data-table">
+    <div class="schedule-container">
+      <table class="data-table schedule-table">
         <thead><tr>
           <th>วัน เดือน ปี</th><th>เวลา</th><th>วิชา</th>
           <th>ชม.ที่ใช้<br>หมดไป/<br>ชม.ทั้งหมด</th>
