@@ -21,3 +21,8 @@
 @media screen and (max-width:380px) {
  .schedule-table tr.schedule-entry { grid-template-columns:minmax(0,1fr); }
 }
+/* Keep the toggle available on desktop as well as mobile. */
+#sidebarToggle { display:inline-flex !important; align-items:center; justify-content:center; flex-shrink:0; }
+@media screen and (min-width:901px) {
+ .app-shell.sidebar-collapsed #sidebar { display:none; }
+}
