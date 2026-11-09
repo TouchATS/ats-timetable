@@ -938,16 +938,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline:3px so
         </div>
         <div class="form-group" style="max-width:160px">
           <label>วิธีสอน</label>
-          <select class="form-control" id="e_method">
-            <option value="บ.">บ. (บรรยาย)</option>
-            <option value="ป.">ป. (ปฏิบัติ)</option>
-            <option value="ด.">ด. (ดูงาน)</option>
-            <option value="อภ.">อภ. (อภิปราย)</option>
-            <option value="สช.">สช. (สาธิต)</option>
-            <option value="สอ.">สอ. (สอบ)</option>
-            <option value="ฝ.">ฝ. (ฝึก)</option>
-            <option value="บ./ป.">บ./ป. (บรรยาย+ปฏิบัติ)</option>
-          </select>
+          <select class="form-control" id="e_method"></select>
         </div>
       </div>
       <!-- Row 4: location / evidence / uniform -->
@@ -2852,6 +2843,91 @@ function exportSummaryExcel(type) {
   showToast(`📥 ดาวน์โหลด ${fileName}`);
 }
 
+const DEFAULT_TEACHING_METHODS = [
+  ['บ.', 'บรรยาย'], ['ป.', 'ปฏิบัติ'], ['ด.', 'ดูงาน'], ['อภ.', 'อภิปราย'],
+  ['สช.', 'สาธิต'], ['สอ.', 'สอบ'], ['ฝ.', 'ฝึก'], ['บ./ป.', 'บรรยาย+ปฏิบัติ'],
+].map(([code, name]) => ({code, name}));
+
+function teachingMethods() {
+  try {
+    const methods = JSON.parse((lsRead(LS.settings) || {}).teachingMethods || 'null');
+    if (Array.isArray(methods) && methods.length && methods.every(method =>
+      typeof method?.code === 'string' && method.code.trim() && typeof method.name === 'string'
+    )) return methods;
+  } catch {}
+  return DEFAULT_TEACHING_METHODS;
+}
+
+function renderTeachingMethodsCard() {
+  const rows = teachingMethods().map(({code, name}, index) =>
+    `<li style="margin:6px 0">${esc(code)} (${esc(name)})
+      <button type="button" class="btn btn-gray btn-sm" onclick="editTeachingMethod(${index})">แก้ไข</button></li>`
+  ).join('');
+  return `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h3>วิธีสอน</h3></div>
+    <div class="card-body">
+      <ul style="padding-left:20px;margin-bottom:12px">${rows}</ul>
+      <form id="teachingMethodForm" onsubmit="event.preventDefault();saveTeachingMethod(this)">
+        <div class="form-row">
+          <div class="form-group"><label for="methodCode">ตัวย่อ</label>
+            <input class="form-control" id="methodCode" maxlength="24" required></div>
+          <div class="form-group"><label for="methodName">ชื่อวิธีสอน</label>
+            <input class="form-control" id="methodName" maxlength="120" required></div>
+        </div>
+        <button type="submit" class="btn btn-primary">เพิ่มวิธีสอน</button>
+        <button type="button" class="btn btn-gray" onclick="resetTeachingMethodForm(this.form)">ล้างช่องกรอก</button>
+      </form>
+    </div>
+  </div>`;
+}
+
+function editTeachingMethod(index) {
+  const method = teachingMethods()[index];
+  if (!method) return;
+  const form = document.getElementById('teachingMethodForm');
+  form.dataset.originalCode = method.code;
+  form.querySelector('#methodCode').value = method.code;
+  form.querySelector('#methodName').value = method.name;
+  form.querySelector('[type="submit"]').textContent = 'บันทึกการแก้ไข';
+  form.querySelector('#methodCode').focus();
+}
+
+function resetTeachingMethodForm(form) {
+  delete form.dataset.originalCode;
+  form.reset();
+  form.querySelector('[type="submit"]').textContent = 'เพิ่มวิธีสอน';
+}
+
+async function saveTeachingMethod(form) {
+  const code = form.querySelector('#methodCode').value.trim();
+  const name = form.querySelector('#methodName').value.trim();
+  if (!code || !name) { showToast('กรุณากรอกตัวย่อและชื่อวิธีสอน'); return; }
+  const originalCode = form.dataset.originalCode;
+  const methods = [...teachingMethods()];
+  const index = methods.findIndex(method => method.code === originalCode);
+  if (originalCode !== undefined && index < 0) {
+    showToast('รายการนี้เปลี่ยนแล้ว กรุณาเลือกใหม่');
+    return;
+  }
+  if (methods.some((method, i) => i !== index && method.code.toLowerCase() === code.toLowerCase())) {
+    showToast('ตัวย่อวิธีสอนนี้มีอยู่แล้ว');
+    return;
+  }
+  if (index < 0) methods.push({code, name});
+  else methods[index] = {code, name};
+  const button = form.querySelector('[type="submit"]');
+  button.disabled = true;
+  try {
+    await api('PUT', '/settings', {teachingMethods: JSON.stringify(methods)});
+    if (form.isConnected) form.closest('.card').outerHTML = renderTeachingMethodsCard();
+    showToast('บันทึกวิธีสอนแล้ว');
+  } catch (error) {
+    showToast(error.message);
+  } finally {
+    button.disabled = false;
+  }
+}
+
 // ─── SETTINGS VIEW ───
 function renderSettingsView() {
   const ca = document.getElementById('contentArea');
@@ -2942,6 +3018,7 @@ function renderSettingsView() {
       🔒 การซิงค์ข้อมูลและสำรองข้อมูล — เฉพาะ <strong>Super Admin</strong> เท่านั้น
     </div>
   </div>`}
+  ${renderTeachingMethodsCard()}
   ${listCard('สถานที่','📍','locationList','DEFAULT_LOCATIONS','addLocation','deleteLocation')}
   ${listCard('หลักฐาน','📄','evidenceList','DEFAULT_EVIDENCES','addEvidence','deleteEvidence')}`;
 }
@@ -3315,7 +3392,14 @@ function openEntryModal(entryId) {
   document.getElementById('e_subject').value   = e?.subject||'';
   document.getElementById('e_cumHours').value  = e?.cumHours||e?.cumulativeHours||'';
   document.getElementById('e_totalHours').value= e?.totalHours||'';
-  document.getElementById('e_method').value    = e?.method||'บ.';
+  const methodSelect = document.getElementById('e_method');
+  const methods = teachingMethods();
+  const selectedMethod = e ? (e.method || '') : methods[0].code;
+  methodSelect.replaceChildren(...methods.map(({code, name}) => new Option(code + ' (' + name + ')', code)));
+  if (!methods.some(({code}) => code === selectedMethod)) {
+    methodSelect.add(new Option(selectedMethod ? selectedMethod + ' (รายการเดิม)' : 'ไม่ระบุ', selectedMethod));
+  }
+  methodSelect.value = selectedMethod;
   // อัปเดต datalist จาก state
   document.getElementById('locations-list').innerHTML =
     state.locationList.map(v=>`<option value="${esc(v)}"></option>`).join('');
@@ -5094,6 +5178,6 @@ function selectBEDate(iso) {
   closeBECal();
 }
 </script>
-<script src="firebase-bridge.js?v=20261103-optimize1"></script><script src="session.js?v=20261102-autosave1"></script><script src="autosave.js?v=20261102-autosave1"></script><script src="course-drafts.js?v=20261103-optimize1"></script><script src="json-import.js?v=20261102-draft1"></script><script src="sidebar-toggle.js?v=20261103-4"></script>
+<script src="firebase-bridge.js?v=20261103-optimize1"></script><script src="session.js?v=20261102-autosave1"></script><script src="autosave.js?v=20261102-autosave1"></script><script src="course-drafts.js?v=20261103-optimize1"></script><script src="json-import.js?v=20261109-methods"></script><script src="sidebar-toggle.js?v=20261103-4"></script>
 </body>
 </html>
