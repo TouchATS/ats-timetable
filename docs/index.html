@@ -514,6 +514,13 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline:3px so
  #sidebarToggle { color:var(--navy); border-color:var(--line); background:#f1f5f9; }
 }
 
+/* Teaching method settings */
+.teaching-methods-table { table-layout: fixed; margin-bottom: 18px; }
+.teaching-methods-table th:first-child { width: 5.5rem; }
+.teaching-methods-table th:last-child { width: 5.5rem; }
+.teaching-methods-table th, .teaching-methods-table td { padding: 8px; vertical-align: middle; overflow-wrap: anywhere; }
+.teaching-methods-table th:last-child, .teaching-methods-table td:last-child { text-align: center; }
+.teaching-methods-table button { white-space: nowrap; }
 </style>
 <!-- SheetJS — สร้าง Excel ฝั่ง client -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -2860,13 +2867,20 @@ function teachingMethods() {
 
 function renderTeachingMethodsCard() {
   const rows = teachingMethods().map(({code, name}, index) =>
-    `<li style="margin:6px 0">${esc(code)} (${esc(name)})
-      <button type="button" class="btn btn-gray btn-sm" onclick="editTeachingMethod(${index})">แก้ไข</button></li>`
+    `<tr>
+      <td><strong>${esc(code)}</strong></td>
+      <td>${esc(name)}</td>
+      <td><button type="button" class="btn btn-gray btn-sm" onclick="editTeachingMethod(${index})"
+        aria-label="แก้ไขวิธีสอน ${esc(code)} ${esc(name)}">แก้ไข</button></td>
+    </tr>`
   ).join('');
   return `<div class="card" style="margin-bottom:16px">
     <div class="card-header"><h3>วิธีสอน</h3></div>
     <div class="card-body">
-      <ul style="padding-left:20px;margin-bottom:12px">${rows}</ul>
+      <table class="data-table teaching-methods-table">
+        <thead><tr><th scope="col">ตัวย่อ</th><th scope="col">ชื่อวิธีสอน</th><th scope="col">จัดการ</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
       <form id="teachingMethodForm" onsubmit="event.preventDefault();saveTeachingMethod(this)">
         <div class="form-row">
           <div class="form-group"><label for="methodCode">ตัวย่อ</label>
